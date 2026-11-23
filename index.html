@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where Do You Stand? — Global Income Calculator</title>
+<style>
+  :root {
+    --peru: #CD853F;
+    --black-2: #1a1a18;
+    --white: #ffffff;
+    --off-white: #f5f4f0;
+    --light-gray: #e8e6e0;
+    --mid-gray: #9a9690;
+    --dark-gray: #3a3834;
+    --accent: var(--peru);
+    --text: var(--black-2);
+    --bg: var(--off-white);
+    --border: var(--light-gray);
+    --good: #3a7d44;
+    --warn: #b8860b;
+    --bad: #9b2335;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: Verdana, Geneva, sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--black-2);
+    color: var(--white);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    border-bottom: 3px solid var(--peru);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* ── LOGO CSS (da Albura) ── */
+  .logo-css {
+    color: var(--black-2);
+    border-top-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0px;
+    display: flex;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+  }
+  .logo-css.albura {
+    background-color: var(--peru);
+    border-top-right-radius: 0%;
+    border-bottom-right-radius: 0%;
+    border-bottom-left-radius: 50%;
+    width: 80%;
+    height: 80%;
+  }
+  .logo-css.inner {
+    background-color: var(--black-2);
+    width: 40%;
+    height: 40%;
+    flex: 0 0 auto;
+  }
+
+  .header-brand {
+    display: flex;
+    flex-direction: column;
+  }
+  .header-brand .site-name {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--white);
+    line-height: 1.1;
+  }
+  .header-brand .site-sub {
+    font-size: 10px;
+    color: var(--mid-gray);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── LANG SWITCHER ── */
+  .lang-switcher {
+    display: flex;
+    gap: 0;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .lang-btn {
+    background: none;
+    border: none;
+    color: var(--mid-gray);
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    width: auto;
+    margin: 0;
+  }
+  .lang-btn:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+  .lang-btn.active { background: var(--peru); color: var(--white); }
+
+  /* ── HERO STRIP ── */
+  .hero-strip {
+    background: var(--black-2);
+    color: var(--white);
+    padding: 2.5rem 2rem 2rem;
+    border-bottom: 1px solid #2a2a28;
+  }
+  .hero-strip h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    max-width: 600px;
+  }
+  .hero-strip p {
+    font-size: 12px;
+    color: var(--mid-gray);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── SECTION LABEL (Swiss style) ── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mid-gray);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.2rem;
+    margin-top: 2rem;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ── FORM ── */
+  label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--mid-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.35rem;
+    margin-top: 1rem;
+  }
+  label:first-child { margin-top: 0; }
+
+  input, select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    font-size: 14px;
+    font-family: Verdana, Geneva, sans-serif;
+    background: var(--off-white);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus { border-color: var(--peru); background: var(--white); }
+
+  .row  { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .row3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; }
+
+  .calc-btn {
+    width: 100%;
+    margin-top: 1.4rem;
+    padding: 0.85rem;
+    background: var(--peru);
+    color: var(--white);
+    border: none;
+    border-radius: 0;
+    font-size: 12px;
+    font-family: Verdana, Geneva, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .calc-btn:hover { background: #b8732e; }
+
+  /* ── RESULTS ── */
+  #results { display: none; }
+
+  .result-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--mid-gray);
+    margin-bottom: 0.25rem;
+  }
+  .result-num {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--black-2);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.2rem;
+  }
+  .result-num.large { font-size: 64px; }
+  .result-num.medium { font-size: 36px; }
+  .result-num.small { font-size: 28px; }
+  .result-desc {
+    font-size: 12px;
+    color: var(--mid-gray);
+    line-height: 1.5;
+  }
+
+  /* ── BAR ── */
+  .bar-wrap {
+    background: var(--light-gray);
+    height: 4px;
+    margin: 0.6rem 0 0.5rem;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--peru);
+    transition: width 0.9s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ── GRIDS ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); }
+  .grid-cell { background: var(--white); padding: 1.2rem; }
+
+  /* ── HERO RESULT BOX ── */
+  .hero-result {
+    background: var(--black-2);
+    color: var(--white);
+    padding: 2rem 1.6rem;
+    margin-bottom: 1rem;
+  }
+  .hero-result .result-label { color: var(--mid-gray); }
+  .hero-result .result-num { color: var(--white); }
+  .hero-result .result-num.large { color: var(--peru); }
+  .hero-result .result-desc { color: #8a8880; }
+  .hero-result .bar-wrap { background: #2a2a28; }
+
+  /* ── TAGS ── */
+  .tag {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .tag-green  { background: #d4edda; color: #1a5c2a; }
+  .tag-blue   { background: #d4e3f5; color: #1a3a6c; }
+  .tag-amber  { background: #fdf0d5; color: #7a4e00; }
+  .tag-red    { background: #f5d4d4; color: #6c1a1a; }
+  .tag-peru   { background: var(--peru); color: var(--white); }
+
+  /* ── NOTE BOX ── */
+  .note-box {
+    border-left: 3px solid var(--peru);
+    padding: 1rem 1.2rem;
+    margin-top: 1.5rem;
+    background: var(--white);
+  }
+  .note-box p { font-size: 12px; color: var(--dark-gray); line-height: 1.7; }
+  .note-box strong { color: var(--black-2); }
+
+  /* ── SOURCES ── */
+  .sources {
+    font-size: 11px;
+    color: var(--mid-gray);
+    margin-top: 1.5rem;
+    line-height: 1.8;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+  .sources a { color: var(--peru); text-decoration: none; }
+  .sources a:hover { text-decoration: underline; }
+
+  /* ── DIVIDER ── */
+  .rule { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  @media (max-width: 520px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .row, .row3 { grid-template-columns: 1fr; }
+    .hero-strip h1 { font-size: 20px; }
+    .result-num.large { font-size: 48px; }
+    header { padding: 0 1rem; }
+    .header-brand .site-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-left">
+    <div class="logo-css">
+      <div class="logo-css albura">
+        <div class="logo-css inner"></div>
+      </div>
+    </div>
+    <div class="header-brand">
+      <span class="site-name" id="hdr-title">Income Position</span>
+      <span class="site-sub" id="hdr-sub">Global Calculator · World Bank PIP 2021</span>
+    </div>
+  </div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('it')">IT</button>
+  </div>
+</header>
+
+<!-- ── HERO STRIP ── -->
+<div class="hero-strip">
+  <h1 id="hero-title">Where Do You Stand?</h1>
+  <p id="hero-sub">Compare your income — nationally, regionally, globally · Data: World Bank PIP</p>
+</div>
+
+<main>
+
+  <!-- INPUT CARD -->
+  <div class="section-label" id="lbl-input">Your data</div>
+  <div class="card">
+    <label id="lbl-country">Country</label>
+    <select id="country"></select>
+
+    <div class="row3">
+      <div>
+        <label id="lbl-income">Income</label>
+        <input type="number" id="income" placeholder="e.g. 2000" min="0">
+      </div>
+      <div>
+        <label id="lbl-period">Period</label>
+        <select id="period">
+          <option value="monthly"  id="opt-monthly">Monthly</option>
+          <option value="annual"   id="opt-annual">Annual</option>
+          <option value="weekly"   id="opt-weekly">Weekly</option>
+          <option value="daily"    id="opt-daily">Daily</option>
+        </select>
+      </div>
+      <div>
+        <label id="lbl-currency">Currency</label>
+        <select id="currency">
+          <option value="EUR">EUR €</option>
+          <option value="USD">USD $</option>
+          <option value="GBP">GBP £</option>
+          <option value="CHF">CHF</option>
+          <option value="JPY">JPY ¥</option>
+          <option value="CAD">CAD</option>
+          <option value="AUD">AUD</option>
+          <option value="INR">INR ₹</option>
+          <option value="BRL">BRL R$</option>
+          <option value="MXN">MXN</option>
+          <option value="ZAR">ZAR</option>
+          <option value="NGN">NGN ₦</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label id="lbl-adults">Adults in household</label>
+        <input type="number" id="adults" value="1" min="1" max="10">
+      </div>
+      <div>
+        <label id="lbl-children">Children</label>
+        <input type="number" id="children" value="0" min="0" max="10">
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()" id="btn-calc">Calculate my position →</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+
+    <!-- Global percentile -->
+    <div class="section-label" id="lbl-sec-global">Global position</div>
+    <div class="hero-result">
+      <div class="result-label" id="lbl-global-pct">Your global income percentile</div>
+      <div class="result-num large" id="global-pct">—</div>
+      <div class="bar-wrap"><div class="bar-fill" id="bar-global" style="width:0%"></div></div>
+      <p class="result-desc" id="global-text">—</p>
+    </div>
+
+    <!-- National -->
+    <div class="section-label" id="lbl-sec-national">Position in your country</div>
+    <div class="grid2" style="margin-bottom:1rem;">
+      <div class="grid-cell">
+        <div class="result-label" id="lbl-nat-pct">National percentile</div>
+        <div class="result-num medium" id="nat-pct">—</div>
+        <div class="bar-wrap"><div class="bar-fill" id="bar-nat" style="width:0%"></div></div>
+        <div class="result-desc" id="nat-text">—</div>
+      </div>
+      <div class="grid-cell">
+        <div class="result-label" id="lbl-vs-median">vs. national median</div>
+        <div class="result-num medium" id="vs-median">—</div>
+        <div class="result-desc" id="vs-median-text">—</div>
+      </div>
+      <div class="grid-cell">
+        <div class="result-label" id="lbl-poverty">Relative poverty threshold</div>
+        <div class="result-desc" id="poverty-line">—</div>
+        <div style="margin-top:0.5rem;" id="poverty-status">—</div>
+      </div>
+      <div class="grid-cell">
+        <div class="result-label" id="lbl-gini">Income inequality (Gini)</div>
+        <div class="result-num medium" id="gini-val">—</div>
+        <div class="result-desc" id="gini-text">—</div>
+      </div>
+    </div>
+
+    <!-- Regional -->
+    <div class="section-label"><span id="lbl-sec-regional">Regional position</span> — <span id="region-name">—</span></div>
+    <div class="card" style="padding:1.2rem;">
+      <div class="result-label" id="lbl-reg-pct">Regional percentile</div>
+      <div class="result-num medium" id="reg-pct">—</div>
+      <div class="bar-wrap"><div class="bar-fill" id="bar-reg" style="width:0%"></div></div>
+      <div class="result-desc" id="reg-text">—</div>
+    </div>
+
+    <!-- Country context -->
+    <div class="section-label" id="lbl-sec-context">Country context</div>
+    <div class="grid3" style="margin-bottom:1rem;">
+      <div class="grid-cell">
+        <div class="result-label" id="lbl-hdi">Human Dev. Index</div>
+        <div class="result-num small" id="hdi-val">—</div>
+        <div class="result-desc" id="hdi-text">—</div>
+      </div>
+      <div class="grid-cell">
+        <div class="result-label" id="lbl-wb">WB income group</div>
+        <div id="wb-group" style="margin-top:0.4rem;">—</div>
+      </div>
+      <div class="grid-cell">
+        <div class="result-label" id="lbl-ppp">Income in PPP $</div>
+        <div class="result-num small" id="ppp-val">—</div>
+        <div class="result-desc" id="lbl-ppp-sub">per person / year (2021 int'l $)</div>
+      </div>
+    </div>
+
+    <!-- Note -->
+    <div class="note-box">
+      <p id="note-text"><strong id="note-title">Why might this differ from other calculators?</strong><br>
+      <span id="note-body">This calculator uses <strong>Purchasing Power Parity (PPP) 2021</strong> from the World Bank PIP — meaning your income is converted not at market exchange rates, but at rates that account for local price levels. A euro in Italy buys less than a euro would in lower-cost countries, so your PPP-adjusted income is typically lower than the nominal figure. We also divide by household members (adults + children×0.5), since the data reflects per-person welfare. Other calculators may use different base years, nominal exchange rates, or not adjust for household size — which can produce significantly different percentile results.</span></p>
+    </div>
+
+    <!-- Sources -->
+    <div class="sources" id="sources-block">
+      <strong id="lbl-sources">Data sources</strong><br>
+      <span id="src-pip">Income distribution & percentiles: <a href="https://pip.worldbank.org" target="_blank">World Bank Poverty and Inequality Platform (PIP)</a>, 2021 PPP.</span><br>
+      <span id="src-gini">Gini index: <a href="https://data.worldbank.org" target="_blank">World Bank Development Indicators</a>.</span><br>
+      <span id="src-hdi">Human Development Index: <a href="https://hdr.undp.org" target="_blank">UNDP Human Development Reports</a>, 2023.</span><br>
+      <span id="src-fx">Exchange rates (approximate, for conversion only): static 2024 averages.</span>
+    </div>
+
+  </div><!-- /results -->
+</main>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const COUNTRIES = {
+  "Australia":      { code:"AUS", region:"EAP", p:[10455,14171,16777,19280,22201,25902,30171,36567,47891,100027], median:22201, gini:0.325, hdi:0.946, wb:"High income" },
+  "Bangladesh":     { code:"BGD", region:"SAS", p:[1189,1445,1667,1889,2145,2447,2822,3361,4439,9885], median:2145, gini:0.321, hdi:0.670, wb:"Lower middle income" },
+  "Brazil":         { code:"BRA", region:"LCN", p:[1375,2210,2974,3828,4817,5908,7684,10245,16239,56876], median:4817, gini:0.489, hdi:0.760, wb:"Upper middle income" },
+  "Canada":         { code:"CAN", region:"NAC", p:[12179,15537,18305,21100,24222,27457,31717,37653,47894,98861], median:24222, gini:0.303, hdi:0.935, wb:"High income" },
+  "China":          { code:"CHN", region:"EAP", p:[2352,2991,3603,4234,4934,5764,6829,8385,11389,27184], median:4934, gini:0.382, hdi:0.788, wb:"Upper middle income" },
+  "Colombia":       { code:"COL", region:"LCN", p:[1015,1625,2156,2749,3467,4368,5699,7862,13009,46937], median:3467, gini:0.510, hdi:0.758, wb:"Upper middle income" },
+  "Egypt":          { code:"EGY", region:"MEA", p:[1606,1916,2188,2441,2723,3037,3453,4053,5296,11912], median:2723, gini:0.316, hdi:0.728, wb:"Lower middle income" },
+  "Ethiopia":       { code:"ETH", region:"SSA", p:[656,818,970,1114,1273,1453,1687,2013,2617,5300], median:1273, gini:0.350, hdi:0.492, wb:"Low income" },
+  "France":         { code:"FRA", region:"ECS", p:[9519,13069,15800,18298,20826,23651,26890,31326,39317,87989], median:20826, gini:0.292, hdi:0.910, wb:"High income" },
+  "Germany":        { code:"DEU", region:"ECS", p:[11143,14927,17951,20823,23765,27203,31406,37337,47990,102809], median:23765, gini:0.316, hdi:0.942, wb:"High income" },
+  "Ghana":          { code:"GHA", region:"SSA", p:[493,720,960,1212,1470,1775,2213,2808,3929,9620], median:1470, gini:0.430, hdi:0.632, wb:"Lower middle income" },
+  "India":          { code:"IND", region:"SAS", p:[1143,1347,1518,1687,1869,2078,2344,2717,3401,6804], median:1869, gini:0.357, hdi:0.644, wb:"Lower middle income" },
+  "Indonesia":      { code:"IDN", region:"EAP", p:[1139,1427,1679,1939,2245,2621,3115,3835,5201,12207], median:2245, gini:0.381, hdi:0.705, wb:"Lower middle income" },
+  "Italy":          { code:"ITA", region:"ECS", p:[7704,10588,13045,15686,18139,20965,24507,29457,37711,84147], median:18139, gini:0.330, hdi:0.906, wb:"High income" },
+  "Japan":          { code:"JPN", region:"EAP", p:[6769,9346,11548,13696,15593,17853,20502,24215,30775,56457], median:15593, gini:0.321, hdi:0.920, wb:"High income" },
+  "Kenya":          { code:"KEN", region:"SSA", p:[600,747,871,1002,1153,1338,1605,2023,2832,7857], median:1153, gini:0.389, hdi:0.601, wb:"Lower middle income" },
+  "Mexico":         { code:"MEX", region:"LCN", p:[1768,2408,2986,3605,4294,5155,6289,8047,11717,33226], median:4294, gini:0.432, hdi:0.774, wb:"Upper middle income" },
+  "Netherlands":    { code:"NLD", region:"ECS", p:[13658,17556,20239,22921,25216,27748,31066,35989,42832,91981], median:25216, gini:0.285, hdi:0.941, wb:"High income" },
+  "Nigeria":        { code:"NGA", region:"SSA", p:[588,748,886,1056,1257,1484,1778,2224,2789,5445], median:1257, gini:0.350, hdi:0.535, wb:"Lower middle income" },
+  "Norway":         { code:"NOR", region:"ECS", p:[14661,18735,22027,25026,27567,30451,34085,39354,49296,100027], median:27567, gini:0.262, hdi:0.966, wb:"High income" },
+  "Pakistan":       { code:"PAK", region:"SAS", p:[925,1100,1261,1446,1607,1797,2043,2374,2957,6107], median:1607, gini:0.296, hdi:0.544, wb:"Lower middle income" },
+  "Poland":         { code:"POL", region:"ECS", p:[7279,9448,11084,12660,13858,15372,17365,20347,25927,52560], median:13858, gini:0.300, hdi:0.881, wb:"High income" },
+  "Russia":         { code:"RUS", region:"ECS", p:[5117,7021,8552,9959,11304,12807,14565,17165,25491,65767], median:11304, gini:0.360, hdi:0.821, wb:"Upper middle income" },
+  "South Korea":    { code:"KOR", region:"EAP", p:[8994,12441,15035,17474,19815,22511,25781,30775,41059,100027], median:19815, gini:0.314, hdi:0.929, wb:"High income" },
+  "South Africa":   { code:"ZAF", region:"SSA", p:[780,1115,1414,1766,2281,3086,4440,7154,10382,30194], median:2281, gini:0.630, hdi:0.717, wb:"Upper middle income" },
+  "Spain":          { code:"ESP", region:"ECS", p:[6757,9941,12294,14733,16903,19100,21791,25539,35476,80017], median:16903, gini:0.333, hdi:0.905, wb:"High income" },
+  "Sweden":         { code:"SWE", region:"ECS", p:[9921,13503,16425,18990,20684,22704,25161,29233,39354,84147], median:20684, gini:0.270, hdi:0.952, wb:"High income" },
+  "Switzerland":    { code:"CHE", region:"ECS", p:[12807,17165,21062,24110,26669,29676,33695,40219,55968,133665], median:26669, gini:0.325, hdi:0.962, wb:"High income" },
+  "Turkey":         { code:"TUR", region:"ECS", p:[2740,3843,4745,5861,6999,8321,10172,13139,18062,52560], median:6999, gini:0.415, hdi:0.855, wb:"Upper middle income" },
+  "United Kingdom": { code:"GBR", region:"ECS", p:[9392,13139,16011,18113,19923,21791,24766,30194,40219,91981], median:19923, gini:0.350, hdi:0.929, wb:"High income" },
+  "United States":  { code:"USA", region:"NAC", p:[11429,15867,19400,23014,26893,31717,38439,48931,66177,139765], median:26893, gini:0.396, hdi:0.927, wb:"High income" },
+};
+
+const GLOBAL_P = [1035, 1480, 1889, 2423, 3135, 4238, 6089, 9790, 18902, 54777];
+
+const REGION_DATA = {
+  "ECS": { name:"Europe & Central Asia",        nameIT:"Europa e Asia Centrale",        p:[3635,5451,7587,9938,12715,15920,19766,24893,33439,68479] },
+  "NAC": { name:"North America",                nameIT:"America del Nord",              p:[11433,15065,18697,22329,26603,31303,37712,47113,65060,109499] },
+  "EAP": { name:"East Asia & Pacific",          nameIT:"Asia Orientale e Pacifico",     p:[1792,2406,3101,3795,4730,5664,7160,9510,15493,41131] },
+  "LCN": { name:"Latin America & Caribbean",    nameIT:"America Latina e Caraibi",      p:[1445,2246,2940,3742,4623,5664,7267,9617,14638,47968] },
+  "MEA": { name:"Middle East & North Africa",   nameIT:"Medio Oriente e Nord Africa",   p:[964,1311,1632,2006,2433,2994,3742,5024,8656,41131] },
+  "SAS": { name:"South Asia",                   nameIT:"Asia Meridionale",              p:[1151,1365,1538,1719,1912,2139,2420,2834,3635,7801] },
+  "SSA": { name:"Sub-Saharan Africa",           nameIT:"Africa Subsahariana",           p:[443,630,804,977,1178,1418,1739,2219,3207,10365] },
+};
+
+const FX_TO_USD = {
+  EUR:1.08, USD:1.0, GBP:1.27, CHF:1.13, JPY:0.0067, CAD:0.74, AUD:0.65,
+  INR:0.012, BRL:0.19, MXN:0.058, ZAR:0.054, NGN:0.00065, CNY:0.138,
+  KRW:0.00075, SEK:0.095, NOK:0.093, PLN:0.25, TRY:0.030, RUB:0.011,
+  EGP:0.021, KES:0.0078, GHS:0.068, ETB:0.018, PKR:0.0036, BDT:0.0091
+};
+
+const COUNTRY_PPP = {
+  "Australia":0.76,"Bangladesh":2.69,"Brazil":1.69,"Canada":0.85,"China":1.72,
+  "Colombia":1.80,"Egypt":2.90,"Ethiopia":8.70,"France":0.87,"Germany":0.90,
+  "Ghana":2.60,"India":3.07,"Indonesia":2.40,"Italy":0.86,"Japan":0.98,
+  "Kenya":2.60,"Mexico":1.78,"Netherlands":0.84,"Nigeria":2.00,"Norway":0.73,
+  "Pakistan":4.00,"Poland":1.75,"Russia":1.62,"South Korea":0.89,"South Africa":1.75,
+  "Spain":0.86,"Sweden":0.87,"Switzerland":0.73,"Turkey":2.80,"United Kingdom":0.76,
+  "United States":1.0,
+};
+
+// ─── I18N ────────────────────────────────────────────────────────────────────
+const T = {
+  en: {
+    hdrTitle: "Income Position",
+    hdrSub: "Global Calculator · World Bank PIP 2021",
+    heroTitle: "Where Do You Stand?",
+    heroSub: "Compare your income — nationally, regionally, globally · Data: World Bank PIP",
+    lblInput: "Your data",
+    lblCountry: "Country",
+    lblIncome: "Income",
+    lblPeriod: "Period",
+    lblCurrency: "Currency",
+    lblAdults: "Adults in household",
+    lblChildren: "Children",
+    btnCalc: "Calculate my position →",
+    optMonthly: "Monthly", optAnnual: "Annual", optWeekly: "Weekly", optDaily: "Daily",
+    lblSecGlobal: "Global position",
+    lblGlobalPct: "Your global income percentile",
+    globalText: (pct) => `You earn more than approximately ${pct - 1}% of the world's population. About ${100 - pct}% earn more than you.`,
+    lblSecNational: "Position in your country",
+    lblNatPct: "National percentile",
+    natText: (country, pct) => `Within ${country}, you earn more than ~${pct - 1}% of the population.`,
+    lblVsMedian: "vs. national median",
+    vsMedianText: (dir, pct, median) => `Your income is ${pct}% ${dir} the national median ($${median} PPP/yr).`,
+    above: "above", below: "below",
+    lblPoverty: "Relative poverty threshold",
+    povertyLine: (val) => `National relative poverty threshold: $${val} PPP/yr (60% of median)`,
+    aboveThreshold: "Above threshold",
+    belowThreshold: "Below threshold",
+    lblGini: "Income inequality (Gini)",
+    giniScale: "Scale 0 (perfect equality) to 1",
+    giniLow: "Low inequality", giniMod: "Moderate inequality", giniHigh: "High inequality", giniVHigh: "Very high inequality",
+    lblSecRegional: "Regional position",
+    lblRegPct: "Regional percentile",
+    regText: (region, pct) => `Within ${region}, you earn more than ~${pct - 1}% of the population.`,
+    lblSecContext: "Country context",
+    lblHdi: "Human Dev. Index",
+    hdiVH: "Very High", hdiH: "High", hdiM: "Medium", hdiL: "Low",
+    hdiSuffix: "Human Development",
+    lblWb: "WB income group",
+    lblPpp: "Income in PPP $",
+    lblPppSub: "per person / year (2021 int'l $)",
+    noteTitle: "Why might this differ from other calculators?",
+    noteBody: `This calculator uses <strong>Purchasing Power Parity (PPP) 2021</strong> from the World Bank PIP — meaning your income is converted not at market exchange rates, but at rates that account for local price levels. A euro in Italy buys less than a euro would in lower-cost countries, so your PPP-adjusted income is typically lower than the nominal figure. We also divide by household members (adults + children×0.5), since the data reflects per-person welfare. Other calculators may use different base years, nominal exchange rates, or not adjust for household size — which can produce significantly different percentile results.`,
+    lblSources: "Data sources",
+    srcPip: `Income distribution & percentiles: <a href="https://pip.worldbank.org" target="_blank">World Bank Poverty and Inequality Platform (PIP)</a>, 2021 PPP.`,
+    srcGini: `Gini index: <a href="https://data.worldbank.org" target="_blank">World Bank Development Indicators</a>.`,
+    srcHdi: `Human Development Index: <a href="https://hdr.undp.org" target="_blank">UNDP Human Development Reports</a>, 2023.`,
+    srcFx: "Exchange rates (approximate, for conversion only): static 2024 averages.",
+    alertIncome: "Please enter a valid income amount.",
+    wbGroups: { "High income":"High income","Upper middle income":"Upper middle income","Lower middle income":"Lower middle income","Low income":"Low income" },
+    regionName: (r) => r.name,
+    ordinal: (n) => { const s=["th","st","nd","rd"]; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); },
+  },
+  it: {
+    hdrTitle: "Posizione Reddituale",
+    hdrSub: "Calcolatore Globale · World Bank PIP 2021",
+    heroTitle: "Dove ti collochi?",
+    heroSub: "Confronta il tuo reddito — a livello nazionale, regionale e mondiale · Dati: World Bank PIP",
+    lblInput: "I tuoi dati",
+    lblCountry: "Paese",
+    lblIncome: "Reddito",
+    lblPeriod: "Periodo",
+    lblCurrency: "Valuta",
+    lblAdults: "Adulti nel nucleo familiare",
+    lblChildren: "Figli / minori",
+    btnCalc: "Calcola la mia posizione →",
+    optMonthly: "Mensile", optAnnual: "Annuale", optWeekly: "Settimanale", optDaily: "Giornaliero",
+    lblSecGlobal: "Posizione globale",
+    lblGlobalPct: "Percentile di reddito globale",
+    globalText: (pct) => `Guadagni più di circa il ${pct - 1}% della popolazione mondiale. Il ${100 - pct}% guadagna più di te.`,
+    lblSecNational: "Posizione nel tuo paese",
+    lblNatPct: "Percentile nazionale",
+    natText: (country, pct) => `In ${country}, guadagni più del ~${pct - 1}% della popolazione.`,
+    lblVsMedian: "vs. mediana nazionale",
+    vsMedianText: (dir, pct, median) => `Il tuo reddito è ${pct}% ${dir} la mediana nazionale ($${median} PPP/anno).`,
+    above: "sopra", below: "sotto",
+    lblPoverty: "Soglia di povertà relativa",
+    povertyLine: (val) => `Soglia di povertà relativa nazionale: $${val} PPP/anno (60% della mediana)`,
+    aboveThreshold: "Sopra la soglia",
+    belowThreshold: "Sotto la soglia",
+    lblGini: "Disuguaglianza (indice Gini)",
+    giniScale: "Scala da 0 (uguaglianza perfetta) a 1",
+    giniLow: "Bassa disuguaglianza", giniMod: "Disuguaglianza moderata", giniHigh: "Alta disuguaglianza", giniVHigh: "Disuguaglianza molto alta",
+    lblSecRegional: "Posizione regionale",
+    lblRegPct: "Percentile regionale",
+    regText: (region, pct) => `Nella regione ${region}, guadagni più del ~${pct - 1}% della popolazione.`,
+    lblSecContext: "Contesto del paese",
+    lblHdi: "Indice di Sviluppo Umano",
+    hdiVH: "Molto alto", hdiH: "Alto", hdiM: "Medio", hdiL: "Basso",
+    hdiSuffix: "Sviluppo Umano",
+    lblWb: "Gruppo WB per reddito",
+    lblPpp: "Reddito in $ PPP",
+    lblPppSub: "per persona / anno ($ int'l 2021)",
+    noteTitle: "Perché potrebbe differire da altri calcolatori?",
+    noteBody: `Questo calcolatore usa la <strong>Parità di Potere d'Acquisto (PPA) 2021</strong> della Banca Mondiale — il reddito viene convertito non ai tassi di cambio di mercato, ma a tassi che tengono conto del livello dei prezzi locali. Un euro in Italia compra meno di quanto farebbe in un paese a costi più bassi, quindi il reddito aggiustato per la PPA è in genere inferiore al valore nominale. Dividiamo anche per i componenti del nucleo familiare (adulti + figli×0,5), poiché i dati riflettono il benessere individuale. Altri calcolatori possono usare anni base diversi, tassi di cambio nominali o non correggere per la dimensione del nucleo familiare.`,
+    lblSources: "Fonti dei dati",
+    srcPip: `Distribuzione del reddito e percentili: <a href="https://pip.worldbank.org" target="_blank">World Bank Poverty and Inequality Platform (PIP)</a>, PPA 2021.`,
+    srcGini: `Indice di Gini: <a href="https://data.worldbank.org" target="_blank">World Bank Development Indicators</a>.`,
+    srcHdi: `Indice di Sviluppo Umano: <a href="https://hdr.undp.org" target="_blank">UNDP Human Development Reports</a>, 2023.`,
+    srcFx: "Tassi di cambio (approssimativi, solo per conversione): medie 2024.",
+    alertIncome: "Inserisci un importo di reddito valido.",
+    wbGroups: { "High income":"Reddito alto","Upper middle income":"Reddito medio-alto","Lower middle income":"Reddito medio-basso","Low income":"Reddito basso" },
+    regionName: (r) => r.nameIT,
+    ordinal: (n) => `${n}°`,
+  }
+};
+
+// ─── LANG STATE ──────────────────────────────────────────────────────────────
+let lang = 'en';
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+  applyTranslations();
+  // Re-render results if visible
+  if (document.getElementById('results').style.display !== 'none') {
+    calculate(true);
+  }
+}
+
+function applyTranslations() {
+  const t = T[lang];
+  document.getElementById('hdr-title').textContent = t.hdrTitle;
+  document.getElementById('hdr-sub').textContent   = t.hdrSub;
+  document.getElementById('hero-title').textContent = t.heroTitle;
+  document.getElementById('hero-sub').textContent  = t.heroSub;
+  document.getElementById('lbl-input').textContent  = t.lblInput;
+  document.getElementById('lbl-country').textContent = t.lblCountry;
+  document.getElementById('lbl-income').textContent  = t.lblIncome;
+  document.getElementById('lbl-period').textContent  = t.lblPeriod;
+  document.getElementById('lbl-currency').textContent= t.lblCurrency;
+  document.getElementById('lbl-adults').textContent  = t.lblAdults;
+  document.getElementById('lbl-children').textContent= t.lblChildren;
+  document.getElementById('btn-calc').textContent    = t.btnCalc;
+  document.getElementById('opt-monthly').textContent = t.optMonthly;
+  document.getElementById('opt-annual').textContent  = t.optAnnual;
+  document.getElementById('opt-weekly').textContent  = t.optWeekly;
+  document.getElementById('opt-daily').textContent   = t.optDaily;
+  document.getElementById('lbl-sec-global').textContent   = t.lblSecGlobal;
+  document.getElementById('lbl-global-pct').textContent   = t.lblGlobalPct;
+  document.getElementById('lbl-sec-national').textContent = t.lblSecNational;
+  document.getElementById('lbl-nat-pct').textContent      = t.lblNatPct;
+  document.getElementById('lbl-vs-median').textContent    = t.lblVsMedian;
+  document.getElementById('lbl-poverty').textContent      = t.lblPoverty;
+  document.getElementById('lbl-gini').textContent         = t.lblGini;
+  document.getElementById('lbl-sec-regional').textContent = t.lblSecRegional;
+  document.getElementById('lbl-reg-pct').textContent      = t.lblRegPct;
+  document.getElementById('lbl-sec-context').textContent  = t.lblSecContext;
+  document.getElementById('lbl-hdi').textContent          = t.lblHdi;
+  document.getElementById('lbl-wb').textContent           = t.lblWb;
+  document.getElementById('lbl-ppp').textContent          = t.lblPpp;
+  document.getElementById('lbl-ppp-sub').textContent      = t.lblPppSub;
+  document.getElementById('note-title').textContent       = t.noteTitle;
+  document.getElementById('note-body').innerHTML          = t.noteBody;
+  document.getElementById('lbl-sources').textContent      = t.lblSources;
+  document.getElementById('src-pip').innerHTML            = t.srcPip;
+  document.getElementById('src-gini').innerHTML           = t.srcGini;
+  document.getElementById('src-hdi').innerHTML            = t.srcHdi;
+  document.getElementById('src-fx').textContent           = t.srcFx;
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function interpolatePercentile(income, pArray) {
+  if (income <= pArray[0]) return Math.max(1, Math.round((income / pArray[0]) * 10));
+  if (income >= pArray[9]) return 99;
+  const pcts = [10,20,30,40,50,60,70,80,90,99];
+  for (let i = 0; i < 9; i++) {
+    if (income <= pArray[i+1]) {
+      const frac = (income - pArray[i]) / (pArray[i+1] - pArray[i]);
+      return Math.round(pcts[i] + frac * (pcts[i+1] - pcts[i]));
+    }
+  }
+  return 99;
+}
+
+function giniLabel(g) {
+  const t = T[lang];
+  if (g < 0.30) return { text: t.giniLow,   cls:"tag-green" };
+  if (g < 0.38) return { text: t.giniMod,   cls:"tag-blue" };
+  if (g < 0.48) return { text: t.giniHigh,  cls:"tag-amber" };
+  return              { text: t.giniVHigh, cls:"tag-red" };
+}
+
+function hdiLabel(h) {
+  const t = T[lang];
+  if (h >= 0.90) return t.hdiVH;
+  if (h >= 0.80) return t.hdiH;
+  if (h >= 0.55) return t.hdiM;
+  return t.hdiL;
+}
+
+function wbTag(group) {
+  const map = { "High income":"tag-green","Upper middle income":"tag-blue","Lower middle income":"tag-amber","Low income":"tag-red" };
+  const label = T[lang].wbGroups[group] || group;
+  return `<span class="tag ${map[group]||'tag-blue'}">${label}</span>`;
+}
+
+function fmt(n) { return n.toLocaleString('en-US', {maximumFractionDigits:0}); }
+
+// ─── POPULATE ────────────────────────────────────────────────────────────────
+const countrySelect = document.getElementById('country');
+Object.keys(COUNTRIES).sort().forEach(name => {
+  const opt = document.createElement('option');
+  opt.value = name; opt.textContent = name;
+  if (name === 'Italy') opt.selected = true;
+  countrySelect.appendChild(opt);
+});
+
+// ─── CALCULATE ───────────────────────────────────────────────────────────────
+function calculate(silent) {
+  const t = T[lang];
+  const country  = countrySelect.value;
+  const income   = parseFloat(document.getElementById('income').value);
+  const period   = document.getElementById('period').value;
+  const currency = document.getElementById('currency').value;
+  const adults   = parseInt(document.getElementById('adults').value) || 1;
+  const children = parseInt(document.getElementById('children').value) || 0;
+
+  if (!income || income <= 0) {
+    if (!silent) alert(t.alertIncome);
+    return;
+  }
+
+  const data = COUNTRIES[country];
+
+  // 1. Annual USD
+  const fxRate = FX_TO_USD[currency] || 1.0;
+  let annualUSD = income * fxRate;
+  if (period === 'monthly') annualUSD *= 12;
+  else if (period === 'weekly')  annualUSD *= 52;
+  else if (period === 'daily')   annualUSD *= 365;
+
+  // 2. PPP 2021
+  const pppFactor = COUNTRY_PPP[country] || 1.0;
+  const annualPPP_household = annualUSD * pppFactor;
+
+  // 3. Per person
+  const householdSize = adults + children * 0.5;
+  const annualPPP = annualPPP_household / householdSize;
+
+  // 4. Percentiles
+  const globalPct = interpolatePercentile(annualPPP, GLOBAL_P);
+  const natPct    = interpolatePercentile(annualPPP, data.p);
+  const regionData = REGION_DATA[data.region];
+  const regPct    = interpolatePercentile(annualPPP, regionData.p);
+
+  const medianRatio  = annualPPP / data.median;
+  const natPovLine   = data.median * 0.60;
+  const abovePov     = annualPPP >= natPovLine;
+
+  // ── RENDER ──────────────────────────────────────────────────────────────────
+  document.getElementById('results').style.display = 'block';
+  if (!silent) document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+
+  // Global
+  document.getElementById('global-pct').textContent = t.ordinal(globalPct);
+  document.getElementById('bar-global').style.width = `${globalPct}%`;
+  document.getElementById('global-text').textContent = t.globalText(globalPct);
+
+  // National
+  document.getElementById('nat-pct').textContent = t.ordinal(natPct);
+  document.getElementById('bar-nat').style.width  = `${natPct}%`;
+  document.getElementById('nat-text').textContent = t.natText(country, natPct);
+
+  const pctDiff = Math.abs(((medianRatio - 1) * 100)).toFixed(0);
+  const dir = medianRatio >= 1 ? t.above : t.below;
+  document.getElementById('vs-median').textContent = medianRatio >= 1 ? `+${pctDiff}%` : `−${pctDiff}%`;
+  document.getElementById('vs-median-text').textContent = t.vsMedianText(dir, pctDiff, fmt(data.median));
+
+  // Poverty
+  document.getElementById('poverty-line').textContent = t.povertyLine(fmt(Math.round(natPovLine)));
+  document.getElementById('poverty-status').innerHTML = abovePov
+    ? `<span class="tag tag-green">${t.aboveThreshold}</span>`
+    : `<span class="tag tag-red">${t.belowThreshold}</span>`;
+
+  // Gini
+  const gl = giniLabel(data.gini);
+  document.getElementById('gini-val').textContent = data.gini.toFixed(2);
+  document.getElementById('gini-text').innerHTML = `<span class="tag ${gl.cls}">${gl.text}</span><br><span style="font-size:10px;color:var(--mid-gray);letter-spacing:0.04em;">${t.giniScale}</span>`;
+
+  // Regional
+  const rName = t.regionName(regionData);
+  document.getElementById('region-name').textContent = rName;
+  document.getElementById('reg-pct').textContent = t.ordinal(regPct);
+  document.getElementById('bar-reg').style.width  = `${regPct}%`;
+  document.getElementById('reg-text').textContent  = t.regText(rName, regPct);
+
+  // Context
+  document.getElementById('hdi-val').textContent  = data.hdi.toFixed(3);
+  document.getElementById('hdi-text').textContent = `${hdiLabel(data.hdi)} ${t.hdiSuffix}`;
+  document.getElementById('wb-group').innerHTML   = wbTag(data.wb);
+  document.getElementById('ppp-val').textContent  = `$${fmt(Math.round(annualPPP))}`;
+}
+
+// Init
+applyTranslations();
+</script>
+</body>
+</html>
